@@ -48,39 +48,40 @@ def main(argv):
     crds = [os.path.join(crds_path, filename) if filename.endswith("cr.yaml") else None for filename in crds]
     crds = list(filter(lambda x: x is not None, crds))
 
-    for cr in list(crds):
-        scorecard_bundle = {
-            "scorecard": {
-                "output": "text",
-                "plugins": [
-                    {"basic": {
-                        "olm-deployed": True,
-                        "namespace": namespace,
-                        "crds-dir": cdrd_path,
-                        "cr-manifest": [cr],
-                        "proxy-image": proxy_image,
-                        "bundle": deploy_dir,
-                        "proxy-pull-policy": "Never",
-                        "csv-path": csv_path,
-                        "init-timeout": 180
-                    }},
-                    {"olm": {
-                        "olm-deployed": True,
-                        "namespace": namespace,
-                        "crds-dir": cdrd_path,
-                        "bundle": deploy_dir,
-                        "cr-manifest": [cr],
-                        "proxy-image": proxy_image,
-                        "proxy-pull-policy": "Never",
-                        "csv-path": csv_path,
-                        "init-timeout": 180
-                    }}
-                ]
-            }
+    
+    scorecard_bundle = {
+        "scorecard": {
+            "output": "text",
+            "plugins": [
+                {"basic": {
+                    "olm-deployed": True,
+                    "namespace": namespace,
+                    "crds-dir": cdrd_path,
+                    "cr-manifest": crds,
+                    "proxy-image": proxy_image,
+                    "bundle": deploy_dir,
+                    "proxy-pull-policy": "Never",
+                    "csv-path": csv_path,
+                    "init-timeout": 180
+                }},
+                {"olm": {
+                    "olm-deployed": True,
+                    "namespace": namespace,
+                    "crds-dir": cdrd_path,
+                    "bundle": deploy_dir,
+                    "cr-manifest": crds,
+                    "proxy-image": proxy_image,
+                    "proxy-pull-policy": "Never",
+                    "csv-path": csv_path,
+                    "init-timeout": 180
+                }}
+            ]
         }
-        if scorecard_bundle is not None:
-            with open(os.path.join(bundle_path, randomString() + ".bundle.yaml"), 'w') as write_file:
-                print(yaml.safe_dump(scorecard_bundle, default_flow_style=False), file=write_file)
+    }
+
+    if scorecard_bundle is not None:
+        with open(os.path.join(bundle_path, randomString() + ".bundle.yaml"), 'w') as write_file:
+            print(yaml.safe_dump(scorecard_bundle, default_flow_style=False), file=write_file)
 
     if crds is not None:
         sys.exit(0)
